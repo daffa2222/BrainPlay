@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <!-- Warna Cokelat Modern (Primary) -->
+    <color name="brown_dark">#4A3525</color>
+    <color name="brown_main">#705335</color>
+    <color name="brown_light">#8C6D4F</color>
+
+    <!-- Warna Cream Estetis (Background & Accent) -->
+    <color name="cream_bg">#FDFBF7</color>
+    <color name="cream_card">#F5EFE6</color>
+    <color name="cream_accent">#E8D8C8</color>
+
+    <!-- Warna Dasar Umum -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#1A1A1A</color>
+    <color name="gray">#757575</color>
 </resources>
