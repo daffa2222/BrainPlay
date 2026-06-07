@@ -4,15 +4,15 @@ plugins {
 
 android {
     namespace = "com.labfinal.brainplay"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+
+    // 1. KAKAK NAIKKAN KE VERSI 36 AGAR COCOK DENGAN REKOMENDASI ERROR
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.labfinal.brainplay"
         minSdk = 24
+
+        // 2. KAKAK NAIKKAN JUGA KE VERSI 36 AGAR SINKRON
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -44,7 +44,10 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
-    // TARO DI SINI DAFFA (DI BAWAH ESPRESSO CORE)
+    // Library Retrofit untuk mengambil data API Kuis
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    // Library Google ML Kit untuk Penerjemah Otomatis Tanpa Batas (Unlimited)
+    implementation("com.google.mlkit:translate:17.0.1")
 }
