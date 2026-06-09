@@ -48,6 +48,5 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
-    // Library Google ML Kit untuk Penerjemah Otomatis Tanpa Batas (Unlimited)
-    implementation("com.google.mlkit:translate:17.0.1")
+
 }
