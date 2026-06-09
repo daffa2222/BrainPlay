@@ -3,126 +3,39 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/cream_bg">
+    android:background="@color/cream_bg"
+    android:padding="24dp">
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="BrainPlay"
+        android:textColor="@color/brown_dark"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="100dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Uji Kemampuan Bahasa Inggrismu!"
+        android:textColor="@color/brown_light"
+        android:textSize="16sp"
+        android:layout_below="@id/tvTitle"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"/>
+
+    <Button
+        android:id="@+id/btnStartQuiz"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="24dp">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp">
-
-            <TextView
-                android:id="@+id/tvQuestionNumber"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:text="Pertanyaan: 1 / 5"
-                android:textColor="@color/brown_light"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <Button
-                android:id="@+id/btnRefresh"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:text="Refresh"
-                android:textSize="12sp"
-                android:textColor="@color/cream_bg"
-                android:backgroundTint="@color/brown_dark" />
-        </RelativeLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@color/cream_card"
-            android:padding="24dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="24dp">
-
-            <TextView
-                android:id="@+id/tvQuestionText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Memuat pertanyaan..."
-                android:textColor="@color/brown_dark"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:gravity="center" />
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/btnOptionA"
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:text="Pilihan Jawaban A"
-            android:textColor="@color/brown_dark"
-            android:backgroundTint="@color/cream_accent"
-            android:layout_marginBottom="12dp"
-            android:textAllCaps="false" />
-
-        <Button
-            android:id="@+id/btnOptionB"
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:text="Pilihan Jawaban B"
-            android:textColor="@color/brown_dark"
-            android:backgroundTint="@color/cream_accent"
-            android:layout_marginBottom="12dp"
-            android:textAllCaps="false" />
-
-        <Button
-            android:id="@+id/btnOptionC"
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:text="Pilihan Jawaban C"
-            android:textColor="@color/brown_dark"
-            android:backgroundTint="@color/cream_accent"
-            android:layout_marginBottom="12dp"
-            android:textAllCaps="false" />
-
-        <Button
-            android:id="@+id/btnOptionD"
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:text="Pilihan Jawaban D"
-            android:textColor="@color/brown_dark"
-            android:backgroundTint="@color/cream_accent"
-            android:layout_marginBottom="32dp"
-            android:textAllCaps="false" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/layoutLoading"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/cream_bg"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:clickable="true"
-        android:focusable="true"
-        android:visibility="gone">
-
-        <ProgressBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:indeterminateTint="@color/brown_dark" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Memuat Kuis..."
-            android:textColor="@color/brown_dark"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-    </LinearLayout>
+        android:layout_height="60dp"
+        android:text="Mulai Kuis"
+        android:textColor="@color/cream_bg"
+        android:backgroundTint="@color/brown_dark"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_centerInParent="true" />
 
 </RelativeLayout>
