@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/cream_bg">
 
-    <!-- Konten Utama Kuis (Dibungkus agar layout tetap rapi) -->
+    <!-- Konten Utama Kuis (Komponen Pertanyaan & Tombol Pilihan) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -91,7 +91,7 @@
 
     </LinearLayout>
 
-    <!-- TIRAI LAYAR LOADING (Berdiri di lapisan paling depan menutupi kuis saat memproses data) -->
+    <!-- TIRAI LOADING SCREEN (Aktif saat aplikasi sedang mengambil data) -->
     <LinearLayout
         android:id="@+id/layoutLoading"
         android:layout_width="match_parent"
@@ -101,15 +101,13 @@
         android:orientation="vertical"
         android:clickable="true"
         android:focusable="true"
-        android:visibility="visible">
+        android:visibility="gone">
 
-        <!-- Indikator lingkaran berputar otomatis -->
         <ProgressBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:indeterminateTint="@color/brown_dark" />
 
-        <!-- Teks informasi proses senyap -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -118,6 +116,47 @@
             android:textColor="@color/brown_dark"
             android:textSize="16sp"
             android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- MANDATORY SPEC: TIRAI KONDISI GAGAL JARINGAN DAN TOMBOL REFRESH (Poin 6 Spesifikasi) -->
+    <LinearLayout
+        android:id="@+id/layoutError"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/cream_bg"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="32dp"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Gagal Memuat Data"
+            android:textColor="@color/brown_dark"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Koneksi internet terputus. Silakan periksa jaringan Anda atau coba muat ulang."
+            android:textColor="@color/brown_light"
+            android:textSize="14sp"
+            android:gravity="center" />
+
+        <!-- Tombol Refresh sesuai spesifikasi teknis poin 6 -->
+        <Button
+            android:id="@+id/btnRefresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Coba Lagi (Refresh)"
+            android:textColor="@color/cream_bg"
+            android:backgroundTint="@color/brown_dark" />
     </LinearLayout>
 
 </RelativeLayout>
