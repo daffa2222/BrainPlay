@@ -4,27 +4,27 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/cream_bg"
-    android:padding="24dp">
+    android:background="?android:attr/windowBackground">
 
-    <!-- Judul Halaman -->
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/tvHistoryTitle"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Riwayat Skor Kuis"
-        android:textColor="@color/brown_dark"
-        android:textSize="24sp"
+        android:textColor="?android:attr/textColorPrimary"
+        android:textSize="28sp"
         android:textStyle="bold"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="24dp"/>
+        android:gravity="center"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="16dp" />
 
-    <!-- PEMENUHAN SPESIFIKASI: Komponen Utama RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvHistory"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:scrollbars="vertical"/>
+        android:scrollbars="vertical"
+        android:paddingBottom="16dp"
+        android:clipToPadding="false" />
 
 </LinearLayout>

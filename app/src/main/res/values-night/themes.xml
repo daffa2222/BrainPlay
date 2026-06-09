@@ -1,7 +1,19 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.BrainPlay" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tema Utama untuk Mode Gelap (Hitam Pekat) -->
+    <style name="Theme.BrainPlay" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Warna Latar Belakang Utama (Hitam Pekat) -->
+        <item name="android:windowBackground">#121212</item>
+
+        <!-- Warna Text Utama & Sekunder (Otomatis Putih/Abu Terang) -->
+        <item name="android:textColorPrimary">#FFFFFF</item>
+        <item name="android:textColorSecondary">#B3FFFFFF</item>
+
+        <!-- Warna Tombol Utama (Abu-abu Gelap Modern) -->
+        <item name="android:colorAccent">#2C2C2C</item>
+        <item name="android:textColorPrimaryInverse">#FFFFFF</item>
+
+        <!-- Warna Tombol Sekunder & Kartu Pertanyaan (Abu-abu Sedang) -->
+        <item name="android:colorControlHighlight">#3E3E3E</item>
     </style>
 </resources>

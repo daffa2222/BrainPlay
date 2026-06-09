@@ -1,9 +1,19 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.BrainPlay" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
-    </style>
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tema Utama untuk Mode Terang (Cokelat Krem) -->
+    <style name="Theme.BrainPlay" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Warna Latar Belakang Utama (Krem) -->
+        <item name="android:windowBackground">@color/cream_bg</item>
 
-    <style name="Theme.BrainPlay" parent="Base.Theme.BrainPlay" />
+        <!-- Warna Text Utama & Sekunder -->
+        <item name="android:textColorPrimary">@color/brown_dark</item>
+        <item name="android:textColorSecondary">@color/brown_light</item>
+
+        <!-- Warna Tombol Utama (Mulai Kuis / Refresh) -->
+        <item name="android:colorAccent">@color/brown_dark</item>
+        <item name="android:textColorPrimaryInverse">@color/cream_bg</item>
+
+        <!-- Warna Tombol Sekunder & Kartu Pertanyaan (Krem Accent/Card) -->
+        <item name="android:colorControlHighlight">@color/cream_accent</item>
+    </style>
 </resources>
