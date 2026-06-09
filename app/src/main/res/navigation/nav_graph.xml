@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.github.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/menuFragment">
+
+    <fragment
+        android:id="@+id/menuFragment"
+        android:name="com.labfinal.brainplay.MenuFragment"
+        android:label="Menu Utama"
+        tools:layout="@layout/fragment_menu" />
+
+    <fragment
+        android:id="@+id/historyFragment"
+        android:name="com.labfinal.brainplay.HistoryFragment"
+        android:label="Riwayat Skor"
+        tools:layout="@layout/fragment_history" />
+</navigation>

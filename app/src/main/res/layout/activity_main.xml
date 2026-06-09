@@ -1,42 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<androidx.fragment.app.FragmentContainerView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_host_fragment"
+    android:name="androidx.navigation.fragment.NavHostFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/cream_bg"
-    android:padding="24dp">
-
-    <TextView
-        android:id="@+id/tvTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="BrainPlay"
-        android:textColor="@color/brown_dark"
-        android:textSize="36sp"
-        android:textStyle="bold"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="150dp"/>
-
-    <TextView
-        android:id="@+id/tvSubtitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Uji Kemampuan Bahasa Inggrismu!"
-        android:textColor="@color/brown_light"
-        android:textSize="16sp"
-        android:layout_below="@id/tvTitle"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="8dp"/>
-
-    <Button
-        android:id="@+id/btnStartQuiz"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:text="Mulai Kuis"
-        android:textColor="@color/cream_bg"
-        android:backgroundTint="@color/brown_dark"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:layout_centerInParent="true" />
-
-</RelativeLayout>
+    app:defaultNavHost="true"
+    app:navGraph="@navigation/nav_graph" />

@@ -48,5 +48,7 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
-
+    // PERSIAPAN FITUR: Library Navigation Component & Fragment
+    implementation("androidx.navigation:navigation-fragment:2.8.0")
+    implementation("androidx.navigation:navigation-ui:2.8.0")
 }
