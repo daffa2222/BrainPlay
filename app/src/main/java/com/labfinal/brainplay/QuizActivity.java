@@ -149,7 +149,21 @@ public class QuizActivity extends AppCompatActivity {
             layoutLoading.setVisibility(View.GONE);
         } else {
             layoutLoading.setVisibility(View.GONE);
+
+            // Perhitungan nilai skor akhir kuis
             int finalScore = (correctAnswerCount * 100) / questionList.size();
+
+            // ====================================================================
+            // BACKEND INTERCEPT: Proses Menyimpan Skor ke SQLite secara Real-time
+            // ====================================================================
+            try {
+                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd MMM yyyy, HH:mm", java.util.Locale.getDefault());
+                String tanggalSekarang = sdf.format(new java.util.Date());
+                dbHelper.tambahSkorKeLokal(finalScore, tanggalSekarang);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             Toast.makeText(this, "Quiz Finished! Score: " + finalScore, Toast.LENGTH_LONG).show();
             finish();
         }
