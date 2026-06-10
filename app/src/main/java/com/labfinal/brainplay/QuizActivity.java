@@ -1,5 +1,7 @@
 package com.labfinal.brainplay;
 
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.View;
@@ -7,6 +9,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
@@ -25,7 +28,7 @@ public class QuizActivity extends AppCompatActivity {
     private TextView tvQuestionNumber, tvQuestionText;
     private Button btnOptionA, btnOptionB, btnOptionC, btnOptionD;
     private LinearLayout layoutLoading;
-    private Button btnRefresh; // Tombol refresh permanen
+    private Button btnRefresh;
 
     private List<QuestionModel> questionList = new ArrayList<>();
     private int currentQuestionIndex = 0;
@@ -60,7 +63,7 @@ public class QuizActivity extends AppCompatActivity {
         // Muat data kuis pertama kali saat halaman dibuka
         muatUlangKuis();
 
-        // LOGIKA REFRESH: Klik untuk restart kuis dari awal di kondisi apa pun!
+        // LOGIKA REFRESH: Klik untuk restart kuis dari awal
         btnRefresh.setOnClickListener(v -> {
             muatUlangKuis();
         });
@@ -72,13 +75,11 @@ public class QuizActivity extends AppCompatActivity {
         btnOptionD.setOnClickListener(v -> checkAnswer(btnOptionD.getText().toString()));
     }
 
-    // Fungsi pusat untuk mereset indeks kuis dan mencoba mengambil data fresh
     private void muatUlangKuis() {
         layoutLoading.setVisibility(View.VISIBLE);
         currentQuestionIndex = 0;
         correctAnswerCount = 0;
 
-        // Kembalikan warna tombol ke default bawaan tema saat kuis diulang
         int defaultColor = getResources().getColor(android.R.color.transparent);
         btnOptionA.setBackgroundColor(defaultColor);
         btnOptionB.setBackgroundColor(defaultColor);
@@ -86,7 +87,7 @@ public class QuizActivity extends AppCompatActivity {
         btnOptionD.setBackgroundColor(defaultColor);
         setOptionsClickable(true);
 
-        fetchQuizData(); // Mencoba hubungi internet lewat Retrofit
+        fetchQuizData();
     }
 
     private void fetchQuizData() {
@@ -97,37 +98,29 @@ public class QuizActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<QuizResponse> call, Response<QuizResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    // JIKA ONLINE: Ambil data dari server API lalu update backup SQLite
                     questionList = response.body().getResults();
                     dbHelper.simpanSemuaSoalKeLokal(questionList);
-
                     displayQuestion();
                 } else {
-                    // Jika server API bermasalah, langsung ambil data offline
                     handleOfflineCondition();
                 }
             }
 
             @Override
             public void onFailure(Call<QuizResponse> call, Throwable t) {
-                // JIKA OFFLINE (TIDAK ADA JARINGAN): Langsung ambil data dari SQLite
                 handleOfflineCondition();
             }
         });
     }
 
     private void handleOfflineCondition() {
-        // Ambil data soal yang sudah pernah disimpan di SQLite HP kamu
         List<QuestionModel> soalLokal = dbHelper.ambilSoalDariLokal();
-
         if (soalLokal != null && !soalLokal.isEmpty()) {
-            // SOLUSI UTAMA: Soal dan jawaban langsung muncul normal secara offline!
             questionList = soalLokal;
             layoutLoading.setVisibility(View.GONE);
             Toast.makeText(this, "Offline Mode: Menggunakan database lokal!", Toast.LENGTH_SHORT).show();
             displayQuestion();
         } else {
-            // Kondisi darurat jika aplikasi baru diinstal, belum pernah online, dan langsung dimainkan offline
             layoutLoading.setVisibility(View.GONE);
             tvQuestionText.setText("Gagal menampilkan data dari API.\n(Tidak ada jaringan & Cache kosong).\n\nSilakan hubungkan internet sekali saja untuk mengambil kuis awal.");
             btnOptionA.setText("-");
@@ -151,30 +144,24 @@ public class QuizActivity extends AppCompatActivity {
 
             tvQuestionText.setText(Html.fromHtml(currentQuestion.getQuestion()).toString());
 
-            // Format teks tombol dengan prefiks huruf pilihan ganda A, B, C, D yang jelas
             btnOptionA.setText("A. " + Html.fromHtml(allOptions.get(0)).toString().trim());
             btnOptionB.setText("B. " + Html.fromHtml(allOptions.get(1)).toString().trim());
             btnOptionC.setText("C. " + Html.fromHtml(allOptions.get(2)).toString().trim());
             btnOptionD.setText("D. " + Html.fromHtml(allOptions.get(3)).toString().trim());
 
-            // RESET WARNA TOMBOL KEMBALI KE DEFAULT (Setiap memuat soal baru)
             int defaultColor = getResources().getColor(android.R.color.transparent);
             btnOptionA.setBackgroundColor(defaultColor);
             btnOptionB.setBackgroundColor(defaultColor);
             btnOptionC.setBackgroundColor(defaultColor);
             btnOptionD.setBackgroundColor(defaultColor);
 
-            // Aktifkan kembali fungsi klik tombol pilihan ganda
             setOptionsClickable(true);
-
             layoutLoading.setVisibility(View.GONE);
         } else {
             layoutLoading.setVisibility(View.GONE);
 
-            // Perhitungan nilai skor akhir kuis
             int finalScore = (correctAnswerCount * 100) / questionList.size();
 
-            // Menyimpan Skor ke SQLite secara Real-time
             try {
                 java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd MMM yyyy, HH:mm", java.util.Locale.getDefault());
                 String tanggalSekarang = sdf.format(new java.util.Date());
@@ -183,23 +170,18 @@ public class QuizActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            Toast.makeText(this, "Quiz Finished! Score: " + finalScore, Toast.LENGTH_LONG).show();
-            finish();
+            tampilkanDialogSkorKustom(finalScore);
         }
     }
 
     @SuppressWarnings("deprecation")
     private void checkAnswer(String selectedAnswerWithPrefix) {
-        // Kunci semua tombol agar user tidak bisa memicu klik ganda saat warna efek tampil
         setOptionsClickable(false);
 
         QuestionModel currentQuestion = questionList.get(currentQuestionIndex);
         String correctAnswer = Html.fromHtml(currentQuestion.getCorrectAnswer()).toString().trim();
-
-        // Potong prefiks "A. ", "B. ", dll untuk mendapatkan teks jawaban murni
         String selectedAnswer = selectedAnswerWithPrefix.substring(3).trim();
 
-        // Mengambil warna indikasi dari framework android resources
         int warnaHijau = getResources().getColor(android.R.color.holo_green_light);
         int warnaMerah = getResources().getColor(android.R.color.holo_red_light);
 
@@ -207,7 +189,6 @@ public class QuizActivity extends AppCompatActivity {
         Button tombolYangDiklik = null;
         Button tombolYangBenar = null;
 
-        // Cari tahu referensi objek tombol mana yang diklik dan mana yang benar
         for (Button btn : allButtons) {
             String btnTextClean = btn.getText().toString().substring(3).trim();
             if (btnTextClean.equalsIgnoreCase(selectedAnswer)) {
@@ -218,16 +199,13 @@ public class QuizActivity extends AppCompatActivity {
             }
         }
 
-        // Jalankan Logika Koreksi Interaktif Visual (Menggantikan Toast Lama)
         if (selectedAnswer.equalsIgnoreCase(correctAnswer)) {
-            // JIKA JAWABAN BENAR: Warnai hijau dan sematkan emoji centang
             correctAnswerCount++;
             if (tombolYangDiklik != null) {
                 tombolYangDiklik.setBackgroundColor(warnaHijau);
                 tombolYangDiklik.setText(tombolYangDiklik.getText() + "  ✅");
             }
         } else {
-            // JIKA JAWABAN SALAH: Warnai tombol salah jadi merah [X], lalu sorot tombol benar jadi hijau [Centang]
             if (tombolYangDiklik != null) {
                 tombolYangDiklik.setBackgroundColor(warnaMerah);
                 tombolYangDiklik.setText(tombolYangDiklik.getText() + "  ❌");
@@ -238,14 +216,111 @@ public class QuizActivity extends AppCompatActivity {
             }
         }
 
-        // MEMBERIKAN JEDA 1.5 DETIK UNTUK EVALUASI VISUAL USER, LALU AUTOMATIC NEXT SOAL
         new android.os.Handler().postDelayed(() -> {
             currentQuestionIndex++;
             displayQuestion();
         }, 1500);
     }
 
-    // Fungsi utilitas pembantu untuk mengaktifkan/menonaktifkan interaksi tombol pilihan ganda
+    // MODIFIKASI TOTAL: Desain Card Dialog Pop-up Rounded dan Adaptif Nuansa Krem/Gelap
+    private void tampilkanDialogSkorKustom(int skorAkhir) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        LinearLayout layoutCard = new LinearLayout(this);
+        layoutCard.setOrientation(LinearLayout.VERTICAL);
+        layoutCard.setPadding(60, 40, 60, 60);
+        layoutCard.setGravity(android.view.Gravity.CENTER);
+
+        // 1. Deteksi Otomatis Mode Gelap atau Terang Sistem
+        int currentNightMode = getResources().getConfiguration().uiMode & android.content.res.Configuration.UI_MODE_NIGHT_MASK;
+
+        int warnaBackgroundCard;
+        int warnaTeksKomponen;
+
+        if (currentNightMode == android.content.res.Configuration.UI_MODE_NIGHT_YES) {
+            // Pengaturan Visual untuk Mode Gelap
+            warnaBackgroundCard = Color.parseColor("#333333"); // Abu-abu gelap material
+            warnaTeksKomponen = Color.WHITE;
+        } else {
+            // Pengaturan Visual untuk Mode Terang (Nuansa Cokelat Krem sesuai request)
+            warnaBackgroundCard = Color.parseColor("#EFE5DB"); // Warna Cokelat Krem Susu Lembut
+            warnaTeksKomponen = Color.parseColor("#4A3B32");    // Warna Teks Cokelat Tua Gelap Berkelas
+        }
+
+        // 2. Membuat Efek Kelengkangan Sudut (Rounded Corner) dan Latar Belakang Card
+        GradientDrawable backgroundDrawable = new GradientDrawable();
+        backgroundDrawable.setColor(warnaBackgroundCard);
+        backgroundDrawable.setCornerRadius(40f); // Tingkat kelengkungan sudut (bikin bulat halus tidak kaku)
+        layoutCard.setBackground(backgroundDrawable);
+
+        // Layout Header untuk tombol silang (Close) di kanan atas
+        LinearLayout layoutHeader = new LinearLayout(this);
+        layoutHeader.setOrientation(LinearLayout.HORIZONTAL);
+        layoutHeader.setGravity(android.view.Gravity.END);
+        LinearLayout.LayoutParams paramsHeader = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        layoutHeader.setLayoutParams(paramsHeader);
+
+        // Membuat Button Silang [✕]
+        Button btnClose = new Button(this, null, android.R.attr.borderlessButtonStyle);
+        btnClose.setText("✕");
+        btnClose.setTextSize(22f);
+        btnClose.setTypeface(null, android.graphics.Typeface.BOLD);
+        btnClose.setMinWidth(0);
+        btnClose.setMinHeight(0);
+        btnClose.setPadding(10, 0, 10, 0);
+        btnClose.setTextColor(warnaTeksKomponen);
+
+        layoutHeader.addView(btnClose);
+        layoutCard.addView(layoutHeader);
+
+        // Komponen Judul "Hasil Kuis"
+        TextView tvJudul = new TextView(this);
+        tvJudul.setText("Hasil Kuis");
+        tvJudul.setTextSize(24f);
+        tvJudul.setTypeface(null, android.graphics.Typeface.BOLD);
+        tvJudul.setTextColor(warnaTeksKomponen);
+        tvJudul.setPadding(0, 0, 0, 25);
+        layoutCard.addView(tvJudul);
+
+        // Komponen Nilai Skor Besar di Tengah
+        TextView tvSkorMurni = new TextView(this);
+        tvSkorMurni.setText(String.valueOf(skorAkhir));
+        tvSkorMurni.setTextSize(64f); // Diperbesar dikit biar makin tegas gokil
+        tvSkorMurni.setTypeface(null, android.graphics.Typeface.BOLD);
+        tvSkorMurni.setGravity(android.view.Gravity.CENTER);
+
+        // Tetap beri aksen warna hijau khas pencapaian skor agar kontrasnya hidup
+        tvSkorMurni.setTextColor(Color.parseColor("#4CAF50"));
+        layoutCard.addView(tvSkorMurni);
+
+        // Detail keterangan jawaban kuis
+        TextView tvDetail = new TextView(this);
+        tvDetail.setText("Benar " + correctAnswerCount + " dari " + questionList.size() + " Pertanyaan");
+        tvDetail.setTextSize(15f);
+        tvDetail.setTypeface(null, android.graphics.Typeface.BOLD);
+        tvDetail.setTextColor(warnaTeksKomponen);
+        tvDetail.setPadding(0, 20, 0, 10);
+        layoutCard.addView(tvDetail);
+
+        builder.setView(layoutCard);
+        builder.setCancelable(false);
+
+        AlertDialog dialogHasil = builder.create();
+
+        // Hilangkan background bawaan AlertDialog bawaan android agar background rounded kita terlihat sempurna
+        if (dialogHasil.getWindow() != null) {
+            dialogHasil.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        btnClose.setOnClickListener(v -> {
+            dialogHasil.dismiss();
+            finish();
+        });
+
+        dialogHasil.show();
+    }
+
     private void setOptionsClickable(boolean isClickable) {
         btnOptionA.setClickable(isClickable);
         btnOptionB.setClickable(isClickable);
