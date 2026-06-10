@@ -73,6 +73,14 @@ public class QuizActivity extends AppCompatActivity {
         btnOptionB.setOnClickListener(v -> checkAnswer(btnOptionB.getText().toString()));
         btnOptionC.setOnClickListener(v -> checkAnswer(btnOptionC.getText().toString()));
         btnOptionD.setOnClickListener(v -> checkAnswer(btnOptionD.getText().toString()));
+
+        // LOGIKA ANTI-ACCIDENTAL EXIT: Mencegah user keluar kuis tanpa sengaja saat menekan tombol Back fisik
+        getOnBackPressedDispatcher().addCallback(this, new androidx.activity.OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                tampilkanDialogKeluarKuis();
+            }
+        });
     }
 
     private void muatUlangKuis() {
@@ -222,103 +230,183 @@ public class QuizActivity extends AppCompatActivity {
         }, 1500);
     }
 
-    // MODIFIKASI TOTAL: Desain Card Dialog Pop-up Rounded dan Adaptif Nuansa Krem/Gelap
     private void tampilkanDialogSkorKustom(int skorAkhir) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         LinearLayout layoutCard = new LinearLayout(this);
         layoutCard.setOrientation(LinearLayout.VERTICAL);
-        layoutCard.setPadding(60, 40, 60, 60);
+        layoutCard.setPadding(60, 50, 60, 50);
         layoutCard.setGravity(android.view.Gravity.CENTER);
 
-        // 1. Deteksi Otomatis Mode Gelap atau Terang Sistem
         int currentNightMode = getResources().getConfiguration().uiMode & android.content.res.Configuration.UI_MODE_NIGHT_MASK;
-
         int warnaBackgroundCard;
         int warnaTeksKomponen;
 
         if (currentNightMode == android.content.res.Configuration.UI_MODE_NIGHT_YES) {
-            // Pengaturan Visual untuk Mode Gelap
-            warnaBackgroundCard = Color.parseColor("#333333"); // Abu-abu gelap material
+            warnaBackgroundCard = Color.parseColor("#333333");
             warnaTeksKomponen = Color.WHITE;
         } else {
-            // Pengaturan Visual untuk Mode Terang (Nuansa Cokelat Krem sesuai request)
-            warnaBackgroundCard = Color.parseColor("#EFE5DB"); // Warna Cokelat Krem Susu Lembut
-            warnaTeksKomponen = Color.parseColor("#4A3B32");    // Warna Teks Cokelat Tua Gelap Berkelas
+            warnaBackgroundCard = Color.parseColor("#EFE5DB");
+            warnaTeksKomponen = Color.parseColor("#4A3B32");
         }
 
-        // 2. Membuat Efek Kelengkangan Sudut (Rounded Corner) dan Latar Belakang Card
         GradientDrawable backgroundDrawable = new GradientDrawable();
         backgroundDrawable.setColor(warnaBackgroundCard);
-        backgroundDrawable.setCornerRadius(40f); // Tingkat kelengkungan sudut (bikin bulat halus tidak kaku)
+        backgroundDrawable.setCornerRadius(40f);
         layoutCard.setBackground(backgroundDrawable);
 
-        // Layout Header untuk tombol silang (Close) di kanan atas
-        LinearLayout layoutHeader = new LinearLayout(this);
-        layoutHeader.setOrientation(LinearLayout.HORIZONTAL);
-        layoutHeader.setGravity(android.view.Gravity.END);
-        LinearLayout.LayoutParams paramsHeader = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        layoutHeader.setLayoutParams(paramsHeader);
-
-        // Membuat Button Silang [✕]
-        Button btnClose = new Button(this, null, android.R.attr.borderlessButtonStyle);
-        btnClose.setText("✕");
-        btnClose.setTextSize(22f);
-        btnClose.setTypeface(null, android.graphics.Typeface.BOLD);
-        btnClose.setMinWidth(0);
-        btnClose.setMinHeight(0);
-        btnClose.setPadding(10, 0, 10, 0);
-        btnClose.setTextColor(warnaTeksKomponen);
-
-        layoutHeader.addView(btnClose);
-        layoutCard.addView(layoutHeader);
-
-        // Komponen Judul "Hasil Kuis"
         TextView tvJudul = new TextView(this);
         tvJudul.setText("Hasil Kuis");
-        tvJudul.setTextSize(24f);
+        tvJudul.setTextSize(22f);
         tvJudul.setTypeface(null, android.graphics.Typeface.BOLD);
         tvJudul.setTextColor(warnaTeksKomponen);
-        tvJudul.setPadding(0, 0, 0, 25);
+        tvJudul.setGravity(android.view.Gravity.CENTER);
+        tvJudul.setPadding(0, 10, 0, 10);
         layoutCard.addView(tvJudul);
 
-        // Komponen Nilai Skor Besar di Tengah
         TextView tvSkorMurni = new TextView(this);
         tvSkorMurni.setText(String.valueOf(skorAkhir));
-        tvSkorMurni.setTextSize(64f); // Diperbesar dikit biar makin tegas gokil
+        tvSkorMurni.setTextSize(48f);
         tvSkorMurni.setTypeface(null, android.graphics.Typeface.BOLD);
         tvSkorMurni.setGravity(android.view.Gravity.CENTER);
-
-        // Tetap beri aksen warna hijau khas pencapaian skor agar kontrasnya hidup
         tvSkorMurni.setTextColor(Color.parseColor("#4CAF50"));
+        tvSkorMurni.setPadding(0, 10, 0, 10);
         layoutCard.addView(tvSkorMurni);
 
-        // Detail keterangan jawaban kuis
         TextView tvDetail = new TextView(this);
         tvDetail.setText("Benar " + correctAnswerCount + " dari " + questionList.size() + " Pertanyaan");
         tvDetail.setTextSize(15f);
-        tvDetail.setTypeface(null, android.graphics.Typeface.BOLD);
         tvDetail.setTextColor(warnaTeksKomponen);
-        tvDetail.setPadding(0, 20, 0, 10);
+        tvDetail.setGravity(android.view.Gravity.CENTER);
+        tvDetail.setPadding(0, 0, 0, 40);
         layoutCard.addView(tvDetail);
 
+        LinearLayout layoutTombol = new LinearLayout(this);
+        layoutTombol.setOrientation(LinearLayout.HORIZONTAL);
+        layoutTombol.setGravity(android.view.Gravity.CENTER);
+        LinearLayout.LayoutParams paramsLayout = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        layoutTombol.setLayoutParams(paramsLayout);
+
+        Button btnSelesai = new Button(this, null, android.R.attr.borderlessButtonStyle);
+        btnSelesai.setText("SELESAI");
+        btnSelesai.setTextSize(14f);
+        btnSelesai.setTypeface(null, android.graphics.Typeface.BOLD);
+        btnSelesai.setTextColor(currentNightMode == android.content.res.Configuration.UI_MODE_NIGHT_YES ?
+                Color.GREEN : Color.parseColor("#2E7D32"));
+        btnSelesai.setPadding(30, 20, 30, 20);
+        layoutTombol.addView(btnSelesai);
+
+        layoutCard.addView(layoutTombol);
         builder.setView(layoutCard);
         builder.setCancelable(false);
 
         AlertDialog dialogHasil = builder.create();
 
-        // Hilangkan background bawaan AlertDialog bawaan android agar background rounded kita terlihat sempurna
         if (dialogHasil.getWindow() != null) {
             dialogHasil.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         }
 
-        btnClose.setOnClickListener(v -> {
+        btnSelesai.setOnClickListener(v -> {
             dialogHasil.dismiss();
             finish();
         });
 
         dialogHasil.show();
+    }
+
+    private void tampilkanDialogKeluarKuis() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        LinearLayout layoutCard = new LinearLayout(this);
+        layoutCard.setOrientation(LinearLayout.VERTICAL);
+        layoutCard.setPadding(60, 50, 60, 50);
+        layoutCard.setGravity(android.view.Gravity.CENTER);
+
+        int currentNightMode = getResources().getConfiguration().uiMode & android.content.res.Configuration.UI_MODE_NIGHT_MASK;
+        int warnaBackgroundCard;
+        int warnaTeksUtama;
+
+        if (currentNightMode == android.content.res.Configuration.UI_MODE_NIGHT_YES) {
+            warnaBackgroundCard = Color.parseColor("#333333");
+            warnaTeksUtama = Color.WHITE;
+        } else {
+            warnaBackgroundCard = Color.parseColor("#EFE5DB");
+            warnaTeksUtama = Color.parseColor("#4A3B32");
+        }
+
+        GradientDrawable backgroundDrawable = new GradientDrawable();
+        backgroundDrawable.setColor(warnaBackgroundCard);
+        backgroundDrawable.setCornerRadius(40f);
+        layoutCard.setBackground(backgroundDrawable);
+
+        TextView tvJudul = new TextView(this);
+        tvJudul.setText("Keluar Kuis?");
+        tvJudul.setTextSize(22f);
+        tvJudul.setTypeface(null, android.graphics.Typeface.BOLD);
+        tvJudul.setTextColor(warnaTeksUtama);
+        tvJudul.setGravity(android.view.Gravity.CENTER);
+        tvJudul.setPadding(0, 10, 0, 20);
+        layoutCard.addView(tvJudul);
+
+        TextView tvPesan = new TextView(this);
+        tvPesan.setText("Progress kuis sesi ini akan hilang dan tidak disimpan ke riwayat. Kamu yakin ingin menyerah?");
+        tvPesan.setTextSize(15f);
+        tvPesan.setTextColor(warnaTeksUtama);
+        tvPesan.setGravity(android.view.Gravity.CENTER);
+        tvPesan.setPadding(0, 0, 0, 40);
+        layoutCard.addView(tvPesan);
+
+        LinearLayout layoutTombol = new LinearLayout(this);
+        layoutTombol.setOrientation(LinearLayout.HORIZONTAL);
+        layoutTombol.setGravity(android.view.Gravity.CENTER);
+        LinearLayout.LayoutParams paramsLayout = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        layoutTombol.setLayoutParams(paramsLayout);
+
+        Button btnKeluar = new Button(this, null, android.R.attr.borderlessButtonStyle);
+        btnKeluar.setText("YA, KELUAR");
+        btnKeluar.setTextSize(14f);
+        btnKeluar.setTypeface(null, android.graphics.Typeface.BOLD);
+        btnKeluar.setTextColor(Color.parseColor("#EF5350"));
+        btnKeluar.setPadding(30, 20, 30, 20);
+        layoutTombol.addView(btnKeluar);
+
+        View space = new View(this);
+        LinearLayout.LayoutParams spaceParams = new LinearLayout.LayoutParams(40, 1);
+        space.setLayoutParams(spaceParams);
+        layoutTombol.addView(space);
+
+        Button btnLanjut = new Button(this, null, android.R.attr.borderlessButtonStyle);
+        btnLanjut.setText("TIDAK, LANJUTKAN");
+        btnLanjut.setTextSize(14f);
+        btnLanjut.setTypeface(null, android.graphics.Typeface.BOLD);
+        btnLanjut.setTextColor(currentNightMode == android.content.res.Configuration.UI_MODE_NIGHT_YES ?
+                Color.GREEN : Color.parseColor("#2E7D32"));
+        btnLanjut.setPadding(30, 20, 30, 20);
+        layoutTombol.addView(btnLanjut);
+
+        layoutCard.addView(layoutTombol);
+        builder.setView(layoutCard);
+        builder.setCancelable(true);
+
+        AlertDialog dialogKeluar = builder.create();
+
+        // FIX DI SINI: dialogVerify diganti menjadi dialogKeluar yang benar
+        if (dialogKeluar.getWindow() != null) {
+            dialogKeluar.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        btnKeluar.setOnClickListener(v -> {
+            dialogKeluar.dismiss();
+            finish();
+        });
+
+        btnLanjut.setOnClickListener(v -> {
+            dialogKeluar.dismiss();
+        });
+
+        dialogKeluar.show();
     }
 
     private void setOptionsClickable(boolean isClickable) {
