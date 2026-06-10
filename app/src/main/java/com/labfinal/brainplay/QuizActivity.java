@@ -60,7 +60,7 @@ public class QuizActivity extends AppCompatActivity {
         // Muat data kuis pertama kali saat halaman dibuka
         muatUlangKuis();
 
-        // LOGIKA REFRESH YANG BENAR: Klik untuk restart kuis dari awal di kondisi apa pun!
+        // LOGIKA REFRESH: Klik untuk restart kuis dari awal di kondisi apa pun!
         btnRefresh.setOnClickListener(v -> {
             muatUlangKuis();
         });
@@ -77,6 +77,15 @@ public class QuizActivity extends AppCompatActivity {
         layoutLoading.setVisibility(View.VISIBLE);
         currentQuestionIndex = 0;
         correctAnswerCount = 0;
+
+        // Kembalikan warna tombol ke default bawaan tema saat kuis diulang
+        int defaultColor = getResources().getColor(android.R.color.transparent);
+        btnOptionA.setBackgroundColor(defaultColor);
+        btnOptionB.setBackgroundColor(defaultColor);
+        btnOptionC.setBackgroundColor(defaultColor);
+        btnOptionD.setBackgroundColor(defaultColor);
+        setOptionsClickable(true);
+
         fetchQuizData(); // Mencoba hubungi internet lewat Retrofit
     }
 
@@ -101,7 +110,7 @@ public class QuizActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<QuizResponse> call, Throwable t) {
-                // JIKA OFFLINE (TIDAK ADA JARINGAN): Langsung ambil data dari SQLite tanpa banyak tanya!
+                // JIKA OFFLINE (TIDAK ADA JARINGAN): Langsung ambil data dari SQLite
                 handleOfflineCondition();
             }
         });
@@ -141,10 +150,22 @@ public class QuizActivity extends AppCompatActivity {
             Collections.shuffle(allOptions);
 
             tvQuestionText.setText(Html.fromHtml(currentQuestion.getQuestion()).toString());
-            btnOptionA.setText(Html.fromHtml(allOptions.get(0)).toString().trim());
-            btnOptionB.setText(Html.fromHtml(allOptions.get(1)).toString().trim());
-            btnOptionC.setText(Html.fromHtml(allOptions.get(2)).toString().trim());
-            btnOptionD.setText(Html.fromHtml(allOptions.get(3)).toString().trim());
+
+            // Format teks tombol dengan prefiks huruf pilihan ganda A, B, C, D yang jelas
+            btnOptionA.setText("A. " + Html.fromHtml(allOptions.get(0)).toString().trim());
+            btnOptionB.setText("B. " + Html.fromHtml(allOptions.get(1)).toString().trim());
+            btnOptionC.setText("C. " + Html.fromHtml(allOptions.get(2)).toString().trim());
+            btnOptionD.setText("D. " + Html.fromHtml(allOptions.get(3)).toString().trim());
+
+            // RESET WARNA TOMBOL KEMBALI KE DEFAULT (Setiap memuat soal baru)
+            int defaultColor = getResources().getColor(android.R.color.transparent);
+            btnOptionA.setBackgroundColor(defaultColor);
+            btnOptionB.setBackgroundColor(defaultColor);
+            btnOptionC.setBackgroundColor(defaultColor);
+            btnOptionD.setBackgroundColor(defaultColor);
+
+            // Aktifkan kembali fungsi klik tombol pilihan ganda
+            setOptionsClickable(true);
 
             layoutLoading.setVisibility(View.GONE);
         } else {
@@ -153,9 +174,7 @@ public class QuizActivity extends AppCompatActivity {
             // Perhitungan nilai skor akhir kuis
             int finalScore = (correctAnswerCount * 100) / questionList.size();
 
-            // ====================================================================
-            // BACKEND INTERCEPT: Proses Menyimpan Skor ke SQLite secara Real-time
-            // ====================================================================
+            // Menyimpan Skor ke SQLite secara Real-time
             try {
                 java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd MMM yyyy, HH:mm", java.util.Locale.getDefault());
                 String tanggalSekarang = sdf.format(new java.util.Date());
@@ -170,19 +189,67 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     @SuppressWarnings("deprecation")
-    private void checkAnswer(String selectedAnswer) {
-        layoutLoading.setVisibility(View.VISIBLE);
+    private void checkAnswer(String selectedAnswerWithPrefix) {
+        // Kunci semua tombol agar user tidak bisa memicu klik ganda saat warna efek tampil
+        setOptionsClickable(false);
+
         QuestionModel currentQuestion = questionList.get(currentQuestionIndex);
         String correctAnswer = Html.fromHtml(currentQuestion.getCorrectAnswer()).toString().trim();
 
-        if (selectedAnswer.trim().equalsIgnoreCase(correctAnswer)) {
-            correctAnswerCount++;
-            Toast.makeText(QuizActivity.this, "Correct! 🎉", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(QuizActivity.this, "Wrong! ❌", Toast.LENGTH_SHORT).show();
+        // Potong prefiks "A. ", "B. ", dll untuk mendapatkan teks jawaban murni
+        String selectedAnswer = selectedAnswerWithPrefix.substring(3).trim();
+
+        // Mengambil warna indikasi dari framework android resources
+        int warnaHijau = getResources().getColor(android.R.color.holo_green_light);
+        int warnaMerah = getResources().getColor(android.R.color.holo_red_light);
+
+        Button[] allButtons = {btnOptionA, btnOptionB, btnOptionC, btnOptionD};
+        Button tombolYangDiklik = null;
+        Button tombolYangBenar = null;
+
+        // Cari tahu referensi objek tombol mana yang diklik dan mana yang benar
+        for (Button btn : allButtons) {
+            String btnTextClean = btn.getText().toString().substring(3).trim();
+            if (btnTextClean.equalsIgnoreCase(selectedAnswer)) {
+                tombolYangDiklik = btn;
+            }
+            if (btnTextClean.equalsIgnoreCase(correctAnswer)) {
+                tombolYangBenar = btn;
+            }
         }
 
-        currentQuestionIndex++;
-        displayQuestion();
+        // Jalankan Logika Koreksi Interaktif Visual (Menggantikan Toast Lama)
+        if (selectedAnswer.equalsIgnoreCase(correctAnswer)) {
+            // JIKA JAWABAN BENAR: Warnai hijau dan sematkan emoji centang
+            correctAnswerCount++;
+            if (tombolYangDiklik != null) {
+                tombolYangDiklik.setBackgroundColor(warnaHijau);
+                tombolYangDiklik.setText(tombolYangDiklik.getText() + "  ✅");
+            }
+        } else {
+            // JIKA JAWABAN SALAH: Warnai tombol salah jadi merah [X], lalu sorot tombol benar jadi hijau [Centang]
+            if (tombolYangDiklik != null) {
+                tombolYangDiklik.setBackgroundColor(warnaMerah);
+                tombolYangDiklik.setText(tombolYangDiklik.getText() + "  ❌");
+            }
+            if (tombolYangBenar != null) {
+                tombolYangBenar.setBackgroundColor(warnaHijau);
+                tombolYangBenar.setText(tombolYangBenar.getText() + "  ✅");
+            }
+        }
+
+        // MEMBERIKAN JEDA 1.5 DETIK UNTUK EVALUASI VISUAL USER, LALU AUTOMATIC NEXT SOAL
+        new android.os.Handler().postDelayed(() -> {
+            currentQuestionIndex++;
+            displayQuestion();
+        }, 1500);
+    }
+
+    // Fungsi utilitas pembantu untuk mengaktifkan/menonaktifkan interaksi tombol pilihan ganda
+    private void setOptionsClickable(boolean isClickable) {
+        btnOptionA.setClickable(isClickable);
+        btnOptionB.setClickable(isClickable);
+        btnOptionC.setClickable(isClickable);
+        btnOptionD.setClickable(isClickable);
     }
 }
