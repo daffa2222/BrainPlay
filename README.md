@@ -74,8 +74,8 @@ Penundaan waktu saat pergantian soal diimplementasikan menggunakan android.os.Ha
 #### Dual Theme Layout
 * Deteksi tema menggunakan Configuration.UI_MODE_NIGHT_MASK.
 * Dialog kustom menyesuaikan warna latar secara otomatis:
-    * 🌙 Dark Mode → Abu-abu Material #333333
-    * ☀️ Light Mode → Krem Susu #EFE5DB
+    * 🌙 Dark Mode 
+    * ☀️ Light Mode 
 
 ---
 
